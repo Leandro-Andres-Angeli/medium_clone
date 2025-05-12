@@ -18,20 +18,19 @@ import { UserEntity } from 'src/user/user.entity';
 export class BackendValidationPipe implements PipeTransform {
   async transform(value: Record<string, any>, metadata: ArgumentMetadata) {
     const metatype: ClassConstructor<any> = metadata.metatype as Type<any>;
-    console.log('metatype', metatype, 'metatype');
 
     const obj: typeof metatype = plainToInstance<
       typeof metatype,
       Record<string, any>
     >(metatype, value);
 
-    console.log('objj', obj instanceof UserEntity);
-
+    if (typeof obj !== 'object') {
+      return value;
+    }
     const errors = await validate(obj, {
       forbidUnknownValues: false,
     });
 
-    console.log('errors', errors);
     if (errors.length === 0) {
       return value;
     }
